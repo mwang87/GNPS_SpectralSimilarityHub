@@ -30,6 +30,7 @@ services:
     container_name: gnpssimilarity-worker
     volumes:
       - ./logs:/app/logs:rw
+      - ./temp:/app/temp:rw
     command: /app/run_worker.sh
     restart: unless-stopped
     depends_on: 
