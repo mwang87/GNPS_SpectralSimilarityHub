@@ -1,14 +1,15 @@
 FROM continuumio/miniconda3:4.7.12
 MAINTAINER Mingxun Wang "mwang87@gmail.com"
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
 RUN apt-get update && apt-get install -y build-essential
 
 RUN conda install -c conda-forge mamba
 RUN mamba create -n spec2vec python=3.7
 RUN mamba install -n spec2vec --channel nlesc --channel bioconda --channel conda-forge matchms
 RUN mamba install -n spec2vec --channel nlesc --channel bioconda --channel conda-forge spec2vec
+
+COPY requirements.txt .
+RUN /bin/bash -c 'source activate spec2vec && pip install -r requirements.txt'
 
 COPY . /app
 WORKDIR /app

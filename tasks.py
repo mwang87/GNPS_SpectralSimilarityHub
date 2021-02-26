@@ -2,6 +2,12 @@ from celery import Celery
 import glob
 import sys
 
+try:
+    import run_spec2vec
+except:
+    pass
+
+
 celery_instance = Celery('tasks', backend='redis://gnpssimilarity-redis', broker='pyamqp://guest@gnpssimilarity-rabbitmq//', )
 
 @celery_instance.task(time_limit=60)
@@ -29,22 +35,18 @@ def tasks_compute_similarity_usi(usi1, usi2):
 
 @celery_instance.task(time_limit=60)
 def tasks_compute_similarity_matchms(usi1, usi2):
-    import run_spec2vec
-
     score = run_spec2vec.calculate_modified_cosine(usi1, usi2)
 
     results = {}
-    results["sim"] = score
-    results["matched_peaks"] = 6
+    results["sim"] = float(score["score"].flat[0])
+    results["matched_peaks"] = int(score["matches"].flat[0])
     results["type"] = "matchms"
 
     return results
 
 @celery_instance.task(time_limit=60)
 def tasks_compute_similarity_spec2vec(usi1, usi2):
-    import run_spec2vec
-    
-    score = run_spec2vec.calculate_modified_cosine(usi1, usi2)
+    #score = run_spec2vec.calculate_modified_cosine(usi1, usi2)
 
     results = {}
     results["sim"] = 1.0

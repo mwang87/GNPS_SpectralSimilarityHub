@@ -13,6 +13,8 @@ from matchms.filtering import add_losses
 from matchms.importing import load_from_mgf
 from matchms import calculate_scores
 from matchms import Scores, Spectrum
+from matchms.similarity import ModifiedCosine
+
 
 def calculate_modified_cosine(spectrum1_dict, spectrum2_dict):
     metadata1 = {"precursor_mz": spectrum1_dict["precursor_mz"]}
@@ -25,10 +27,15 @@ def calculate_modified_cosine(spectrum1_dict, spectrum2_dict):
     mz2 = [peak[0] for peak in spectrum2_dict["peaks"]]
     int2 = [peak[1] for peak in spectrum2_dict["peaks"]]
 
-    s1 = Spectrum(mz1, int1, metadata1)
-    s2 = Spectrum(mz2, int2, metadata2)
+    s1 = Spectrum(np.array(mz1), np.array(int1), metadata1)
+    s2 = Spectrum(np.array(mz2), np.array(int2), metadata2)
 
-    return 0
+    norm_s1 = normalize_intensities(s1)
+    norm_s2 = normalize_intensities(s2)
+    modified_cosine = ModifiedCosine()
+    score = modified_cosine.pair(norm_s1, norm_s2)
+
+    return score
 
 def calculate_spec2vec(spectrum1, spectrum2):
     return 0
