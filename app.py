@@ -274,8 +274,14 @@ def draw_output(usi1, usi2):
     spec2vec_results = spec2vec_results.get()
     simile_results = simile_results.get()
 
+    # Showing the spectra
+    image_obj = html.Img(
+        src='https://metabolomics-usi.ucsd.edu/svg/mirror?usi1={}&usi2={}'.format(usi1, usi2),
+    ) 
 
-    return [[json.dumps(usi_results), json.dumps(matchms_results), json.dumps(spec2vec_results), json.dumps(simile_results)]]
+
+
+    return [[json.dumps(usi_results), json.dumps(matchms_results), json.dumps(spec2vec_results), json.dumps(simile_results), image_obj]]
 
 
 if __name__ == "__main__":

@@ -46,8 +46,8 @@ def tasks_compute_similarity_matchms(usi1, usi2):
 
 @celery_instance.task(time_limit=60)
 def tasks_compute_similarity_spec2vec(usi1, usi2):
-    #score = run_spec2vec.calculate_modified_cosine(usi1, usi2)
-
+    score = run_spec2vec.calculate_spec2vec(usi1, usi2)
+    
     results = {}
     results["sim"] = 1.0
     results["matched_peaks"] = 6
