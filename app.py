@@ -102,6 +102,11 @@ MIDDLE_DASHBOARD = [
                 children=[html.Div([html.Div(id="loading-output-23")])],
                 type="default",
             ),
+            dcc.Loading(
+                id="plot_link",
+                children=[html.Div([html.Div(id="loading-output-42")])],
+                type="default",
+            ),
         ]
     )
 ]
@@ -163,7 +168,9 @@ def _get_url_param(param_dict, key, default):
                 Output('usi1', 'value'), 
                 Output('usi2', 'value'), 
               ],
-              [Input('url', 'search')])
+              [
+                  Input('url', 'search')
+              ])
 def determine_task(search):
     
     try:
@@ -180,73 +187,23 @@ def determine_task(search):
     return [usi1, usi2]
 
 
-# @app.callback([
-#                 Output('plot_link', 'children')
-#               ],
-#               [
-#                   Input('gnps_tall_table_usi', 'value'),
-#                   Input('gnps_quant_table_usi', 'value'),
-#                   Input('gnps_metadata_table_usi', 'value'), 
-#                 Input('feature', 'value'),
-#                 Input("metadata_column", "value"),
-#                 Input("facet_column", "value"),
-#                 Input("animation_column", "value"),
-#                 Input("group_selection", "value"),
-#                 Input("color_selection", "value"),
-#                 Input("theme", "value"),
-#                 Input("plot_type", "value"),
-#                 Input("image_export_format", "value"),
-#                 Input("points_toggle", "value"),
-#                 Input("log_axis", "value"),
-#                 Input("lat_column", "value"),
-#                 Input("long_column", "value"),
-#                 Input("map_animation_column", "value"),
-#                 Input("map_scope", "value"),
-#               ])
-# def draw_link(      gnps_tall_table_usi, 
-#                     gnps_quant_table_usi, 
-#                     gnps_metadata_table_usi, 
-#                     feature_id, 
-#                     metadata_column, 
-#                     facet_column, 
-#                     animation_column, 
-#                     group_selection, 
-#                     color_selection, 
-#                     theme, 
-#                     plot_type, 
-#                     image_export_format, 
-#                     points_toggle, 
-#                     log_axis,
-#                     lat_column,
-#                     long_column,
-#                     map_animation_column,
-#                     map_scope):
-#     # Creating Reproducible URL for Plot
-#     url_params = {}
-#     url_params["gnps_tall_table_usi"] = gnps_tall_table_usi
-#     url_params["gnps_quant_table_usi"] = gnps_quant_table_usi
-#     url_params["gnps_metadata_table_usi"] = gnps_metadata_table_usi
-
-#     url_params["feature"] = feature_id
-#     url_params["metadata"] = metadata_column
-#     url_params["facet"] = facet_column
-#     url_params["groups"] = ";".join(group_selection)
-#     url_params["plot_type"] = plot_type
-#     url_params["color"] = color_selection
-#     url_params["points_toggle"] = points_toggle
-#     url_params["theme"] = theme
-#     url_params["animation_column"] = animation_column
-
-#     # Mapping Options
-#     url_params["lat_column"] = lat_column
-#     url_params["long_column"] = long_column
-#     url_params["map_animation_column"] = map_animation_column
-#     url_params["map_scope"] = map_scope
+@app.callback([
+                Output('plot_link', 'children')
+              ],
+              [
+                  Input('usi1', 'value'),
+                  Input('usi2', 'value'),
+              ])
+def draw_link(      usi1, usi2):
+    # Creating Reproducible URL for Plot
+    url_params = {}
+    url_params["usi1"] = usi1
+    url_params["usi2"] = usi2
     
-#     url_provenance = dbc.Button("Link to this Plot", block=True, color="primary", className="mr-1")
-#     provenance_link_object = dcc.Link(url_provenance, href="/?" + urllib.parse.urlencode(url_params) , target="_blank")
+    url_provenance = dbc.Button("Link to this Plot", block=True, color="primary", className="mr-1")
+    provenance_link_object = dcc.Link(url_provenance, href="/?" + urllib.parse.urlencode(url_params) , target="_blank")
 
-#     return [provenance_link_object]
+    return [provenance_link_object]
 
 import requests
 def get_usi_peaks(usi):
