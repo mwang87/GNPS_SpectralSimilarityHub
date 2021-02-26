@@ -64,8 +64,7 @@ def tasks_compute_similarity_spec2vec(spectrum1_dict, spectrum2_dict):
     score = run_spec2vec.calculate_spec2vec(spectrum1_dict, spectrum2_dict)
 
     results = {}
-    results["sim"] = 1.0
-    results["matched_peaks"] = 6
+    results["sim"] = score
     results["type"] = "spec2vec"
 
     return results

@@ -273,20 +273,32 @@ def draw_output(usi1, usi2):
     simile_results = tasks.tasks_compute_similarity_simile.delay(spec1, spec2)
     gnps_results = tasks.tasks_compute_similarity_gnpsalignment.delay(spec1, spec2)
     
-    usi_results = usi_results.get()
-    matchms_results = matchms_results.get()
-    spec2vec_results = spec2vec_results.get()
-    simile_results = simile_results.get()
-    gnps_results = gnps_results.get()
+    result_list = [usi_results, 
+                    matchms_results,
+                    spec2vec_results,
+                    simile_results, 
+                    gnps_results]
+
+    real_result_list = []
+
+    for result in result_list:
+        try:
+            result = result.get()
+            real_result_list.append(result)
+        except:
+            pass
 
     # Showing the spectra
     image_obj = html.Img(
         src='https://metabolomics-usi.ucsd.edu/svg/mirror?usi1={}&usi2={}'.format(usi1, usi2),
-    ) 
+    )
+    
+    table = dbc.Table.from_dataframe(pd.DataFrame(real_result_list), striped=True, bordered=True, hover=True)
 
 
 
-    return [[json.dumps(usi_results), json.dumps(matchms_results), json.dumps(spec2vec_results), json.dumps(simile_results), json.dumps(gnps_results), image_obj]]
+
+    return [[image_obj, html.Br(), table]]
 
 
 if __name__ == "__main__":

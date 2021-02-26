@@ -15,6 +15,11 @@ from matchms import calculate_scores
 from matchms import Scores, Spectrum
 from matchms.similarity import ModifiedCosine
 
+from spec2vec import Spec2Vec
+from spec2vec import SpectrumDocument
+
+# Doing actual spec2vec
+model = gensim.models.Word2Vec.load("./bin/spec2vec/spec2vec_UniqueInchikeys_ratio05_filtered_iter_50.model")
 
 def calculate_modified_cosine(spectrum1_dict, spectrum2_dict):
     metadata1 = {"precursor_mz": spectrum1_dict["precursor_mz"]}
@@ -52,4 +57,14 @@ def calculate_spec2vec(spectrum1_dict, spectrum2_dict):
     norm_s1 = normalize_intensities(s1)
     norm_s2 = normalize_intensities(s2)
 
-    return 0
+    s1_doc = [SpectrumDocument(norm_s1, n_decimals=2)]
+    s2_doc = [SpectrumDocument(norm_s2, n_decimals=2)]
+
+    # Define similarity_function
+    spec2vec = Spec2Vec(model=model, intensity_weighting_power=0.5,
+                            allowed_missing_percentage=80.0)
+
+
+    scores = calculate_scores(s1_doc, s2_doc, spec2vec).scores
+
+    return scores[0][0]
