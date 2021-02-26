@@ -271,11 +271,13 @@ def draw_output(usi1, usi2):
     matchms_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2)
     spec2vec_results = tasks.tasks_compute_similarity_spec2vec.delay(spec1, spec2)
     simile_results = tasks.tasks_compute_similarity_simile.delay(spec1, spec2)
+    gnps_results = tasks.tasks_compute_similarity_gnpsalignment.delay(spec1, spec2)
     
     usi_results = usi_results.get()
     matchms_results = matchms_results.get()
     spec2vec_results = spec2vec_results.get()
     simile_results = simile_results.get()
+    gnps_results = gnps_results.get()
 
     # Showing the spectra
     image_obj = html.Img(
@@ -284,7 +286,7 @@ def draw_output(usi1, usi2):
 
 
 
-    return [[json.dumps(usi_results), json.dumps(matchms_results), json.dumps(spec2vec_results), json.dumps(simile_results), image_obj]]
+    return [[json.dumps(usi_results), json.dumps(matchms_results), json.dumps(spec2vec_results), json.dumps(simile_results), json.dumps(gnps_results), image_obj]]
 
 
 if __name__ == "__main__":

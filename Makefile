@@ -1,8 +1,3 @@
-build:
-	docker build -t gnpslibrary . 
-
-bash:
-	docker run -it --rm gnpslibrary /bin/bash
 
 server-compose-build-nocache:
 	docker-compose build --no-cache
@@ -16,4 +11,4 @@ server-compose:
 	docker-compose up -d
 
 attach:
-	docker exec -i -t gnpslcms-dash /bin/bash
+	docker exec -i -t gnpssimilarity-worker /bin/bash

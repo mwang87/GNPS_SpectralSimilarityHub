@@ -17,7 +17,8 @@ except:
 try:
     import run_gnps
 except:
-    print("SIMILE IMPORT FAILURE")
+    raise
+    print("GNPS IMPORT FAILURE")
     pass
 
 
@@ -30,9 +31,10 @@ def task_computeheartbeat():
 
 @celery_instance.task(time_limit=60)
 def tasks_compute_similarity_gnpsalignment(spectrum1_dict, spectrum2_dict):
+    score = run_gnps.calculate_gnps(spectrum1_dict, spectrum2_dict)
+
     results = {}
-    results["sim"] = 1.0
-    results["matched_peaks"] = 6
+    results["sim"] = score["score"]
     results["type"] = "gnpsalignment"
 
     return results
