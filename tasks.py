@@ -14,6 +14,13 @@ except:
     pass
 
 
+try:
+    import run_gnps
+except:
+    print("SIMILE IMPORT FAILURE")
+    pass
+
+
 celery_instance = Celery('tasks', backend='redis://gnpssimilarity-redis', broker='pyamqp://guest@gnpssimilarity-rabbitmq//', )
 
 @celery_instance.task(time_limit=60)
