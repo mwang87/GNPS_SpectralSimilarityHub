@@ -1,0 +1,3 @@
+[submodule "simile"]
+	path = simile
+	url = https://github.com/biorack/simile

@@ -7,6 +7,12 @@ try:
 except:
     pass
 
+try:
+    import run_simile
+except:
+    print("SIMILE IMPORT FAILURE")
+    pass
+
 
 celery_instance = Celery('tasks', backend='redis://gnpssimilarity-redis', broker='pyamqp://guest@gnpssimilarity-rabbitmq//', )
 
@@ -16,7 +22,7 @@ def task_computeheartbeat():
     return "Up"
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_gnpsalignment(usi1, usi2):
+def tasks_compute_similarity_gnpsalignment(spectrum1_dict, spectrum2_dict):
     results = {}
     results["sim"] = 1.0
     results["matched_peaks"] = 6
@@ -25,7 +31,7 @@ def tasks_compute_similarity_gnpsalignment(usi1, usi2):
     return results
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_usi(usi1, usi2):
+def tasks_compute_similarity_usi(spectrum1_dict, spectrum2_dict):
     results = {}
     results["sim"] = 1.0
     results["matched_peaks"] = 6
@@ -34,8 +40,8 @@ def tasks_compute_similarity_usi(usi1, usi2):
     return results
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_matchms(usi1, usi2):
-    score = run_spec2vec.calculate_modified_cosine(usi1, usi2)
+def tasks_compute_similarity_matchms(spectrum1_dict, spectrum2_dict):
+    score = run_spec2vec.calculate_modified_cosine(spectrum1_dict, spectrum2_dict)
 
     results = {}
     results["sim"] = float(score["score"].flat[0])
@@ -45,9 +51,9 @@ def tasks_compute_similarity_matchms(usi1, usi2):
     return results
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_spec2vec(usi1, usi2):
-    score = run_spec2vec.calculate_spec2vec(usi1, usi2)
-    
+def tasks_compute_similarity_spec2vec(spectrum1_dict, spectrum2_dict):
+    score = run_spec2vec.calculate_spec2vec(spectrum1_dict, spectrum2_dict)
+
     results = {}
     results["sim"] = 1.0
     results["matched_peaks"] = 6
@@ -56,7 +62,9 @@ def tasks_compute_similarity_spec2vec(usi1, usi2):
     return results
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_simile(usi1, usi2):
+def tasks_compute_similarity_simile(spectrum1_dict, spectrum2_dict):
+    score = run_simile.calculate_simile(spectrum1_dict, spectrum2_dict)
+
     results = {}
     results["sim"] = 1.0
     results["matched_peaks"] = 6
@@ -82,5 +90,5 @@ celery_instance.conf.task_routes = {
     'tasks.tasks_compute_similarity_spec2vec': {'queue': 'spec2vec'},
     'tasks.tasks_compute_similarity_matchms': {'queue': 'spec2vec'},
 
-    'tasks.tasks_compute_similarity_simile': {'queue': 'worker'},
+    'tasks.tasks_compute_similarity_simile': {'queue': 'simile'},
 }

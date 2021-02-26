@@ -23,7 +23,6 @@ def calculate_modified_cosine(spectrum1_dict, spectrum2_dict):
     mz1 = [peak[0] for peak in spectrum1_dict["peaks"]]
     int1 = [peak[1] for peak in spectrum1_dict["peaks"]]
 
-
     mz2 = [peak[0] for peak in spectrum2_dict["peaks"]]
     int2 = [peak[1] for peak in spectrum2_dict["peaks"]]
 
@@ -43,7 +42,6 @@ def calculate_spec2vec(spectrum1_dict, spectrum2_dict):
 
     mz1 = [peak[0] for peak in spectrum1_dict["peaks"]]
     int1 = [peak[1] for peak in spectrum1_dict["peaks"]]
-
 
     mz2 = [peak[0] for peak in spectrum2_dict["peaks"]]
     int2 = [peak[1] for peak in spectrum2_dict["peaks"]]

@@ -55,6 +55,22 @@ services:
       - default
       - nginx-net
 
+  gnpssimilarity-worker-simile:
+    build:
+      context: .
+      dockerfile: Dockerfile.simile
+    container_name: gnpssimilarity-worker-simile
+    volumes:
+      - ./logs:/app/logs:rw
+    command: /app/run_worker_simile.sh
+    restart: unless-stopped
+    depends_on: 
+      - gnpssimilarity-redis
+      - gnpssimilarity-rabbitmq
+    networks:
+      - default
+      - nginx-net
+
   gnpssimilarity-rabbitmq:
     container_name: gnpssimilarity-rabbitmq
     image: rabbitmq
