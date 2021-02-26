@@ -129,8 +129,7 @@ EXAMPLES_DASHBOARD = [
     dbc.CardHeader(html.H5("Examples")),
     dbc.CardBody(
         [
-            html.A('Basic', 
-                    href=""),
+            html.A('Basic 14 Da Delta', href="/?usi1=mzspec%3AGNPS%3ATASK-c94f9f981fd8438c9a27d57a228fe08e-spectra%2Fspecs_ms.mgf%3Ascan%3A1&usi2=mzspec%3AGNPS%3ATASK-c94f9f981fd8438c9a27d57a228fe08e-spectra%2Fspecs_ms.mgf%3Ascan%3A260"),
         ]
     )
 ]
@@ -178,11 +177,11 @@ def determine_task(search):
     except:
         query_dict = {}
 
-    usi1 = _get_url_param(query_dict, "usi1", 'mzspec:MSV000082796:KP_108_Positive:scan:1974')
-    usi2 = _get_url_param(query_dict, "usi2", 'mzspec:MSV000082796:KP_108_Positive:scan:1977')
+    # usi1 = _get_url_param(query_dict, "usi1", 'mzspec:MSV000082796:KP_108_Positive:scan:1974')
+    # usi2 = _get_url_param(query_dict, "usi2", 'mzspec:MSV000082796:KP_108_Positive:scan:1977')
 
-    #usi1 = _get_url_param(query_dict, "usi1", 'mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1943')
-    #usi2 = _get_url_param(query_dict, "usi2", 'mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1943')
+    usi1 = _get_url_param(query_dict, "usi1", 'mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1943')
+    usi2 = _get_url_param(query_dict, "usi2", 'mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1943')
 
     return [usi1, usi2]
 
@@ -254,7 +253,7 @@ def draw_output(usi1, usi2):
 
     # Showing the spectra
     image_obj = html.Img(
-        src='https://metabolomics-usi.ucsd.edu/svg/mirror?usi1={}&usi2={}'.format(usi1, usi2),
+        src='https://metabolomics-usi.ucsd.edu/svg/mirror?usi1={}&usi2={}&cosine=shifted'.format(usi1, usi2),
     )
     
     table = dbc.Table.from_dataframe(pd.DataFrame(real_result_list), striped=True, bordered=True, hover=True)
