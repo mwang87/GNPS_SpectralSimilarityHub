@@ -231,12 +231,15 @@ def _calculate_scores(usi1, usi2, alignment_params={}):
     spec2 = get_usi_peaks(usi2)
 
     usi_results = tasks.tasks_compute_similarity_usi.delay(spec1, spec2, alignment_params=alignment_params)
-    matchms_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, alignment_params=alignment_params)
+    matchms_modified_cosine_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="modified_cosine", alignment_params=alignment_params)
+    matchms_greedy_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="cosine_greedy", alignment_params=alignment_params)
+
     spec2vec_results = tasks.tasks_compute_similarity_spec2vec.delay(spec1, spec2, alignment_params=alignment_params)
     simile_results = tasks.tasks_compute_similarity_simile.delay(spec1, spec2, alignment_params=alignment_params)
     gnps_results = tasks.tasks_compute_similarity_gnpsalignment.delay(spec1, spec2, alignment_params=alignment_params)
     
-    result_list = [ matchms_results,
+    result_list = [ matchms_modified_cosine_results,
+                    matchms_greedy_results, 
                     spec2vec_results,
                     simile_results, 
                     gnps_results]

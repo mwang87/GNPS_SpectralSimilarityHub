@@ -13,7 +13,7 @@ from matchms.filtering import add_losses
 from matchms.importing import load_from_mgf
 from matchms import calculate_scores
 from matchms import Scores, Spectrum
-from matchms.similarity import ModifiedCosine
+from matchms.similarity import ModifiedCosine, CosineGreedy
 
 from spec2vec import Spec2Vec
 from spec2vec import SpectrumDocument
@@ -21,7 +21,7 @@ from spec2vec import SpectrumDocument
 # Doing actual spec2vec
 model = gensim.models.Word2Vec.load("./bin/spec2vec/spec2vec_UniqueInchikeys_ratio05_filtered_iter_50.model")
 
-def calculate_modified_cosine(spectrum1_dict, spectrum2_dict, alignment_params={}):
+def calculate_matchms(spectrum1_dict, spectrum2_dict, scoring_function="modified_cosine", alignment_params={}):
     metadata1 = {"precursor_mz": spectrum1_dict["precursor_mz"]}
     metadata2 = {"precursor_mz": spectrum2_dict["precursor_mz"]}
 
@@ -36,8 +36,13 @@ def calculate_modified_cosine(spectrum1_dict, spectrum2_dict, alignment_params={
 
     norm_s1 = normalize_intensities(s1)
     norm_s2 = normalize_intensities(s2)
-    modified_cosine = ModifiedCosine(tolerance=alignment_params.get("peak_tolerance"))
-    score = modified_cosine.pair(norm_s1, norm_s2)
+
+    if scoring_function == "modified_cosine":
+        score_function = ModifiedCosine(tolerance=alignment_params.get("peak_tolerance"))
+    elif scoring_function == "cosine_greedy":
+        score_function = CosineGreedy(tolerance=alignment_params.get("peak_tolerance"))
+        
+    score = score_function.pair(norm_s1, norm_s2)
 
     return score
 

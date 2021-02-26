@@ -49,13 +49,13 @@ def tasks_compute_similarity_usi(spectrum1_dict, spectrum2_dict, alignment_param
     return results
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_matchms(spectrum1_dict, spectrum2_dict, alignment_params={}):
-    score = run_spec2vec.calculate_modified_cosine(spectrum1_dict, spectrum2_dict, alignment_params=alignment_params)
+def tasks_compute_similarity_matchms(spectrum1_dict, spectrum2_dict, scoring_function="modified_cosine", alignment_params={}):
+    score = run_spec2vec.calculate_matchms(spectrum1_dict, spectrum2_dict, scoring_function=scoring_function, alignment_params=alignment_params)
 
     results = {}
     results["sim"] = float(score["score"].flat[0])
     results["matched_peaks"] = int(score["matches"].flat[0])
-    results["type"] = "matchms"
+    results["type"] = "matchms:{}".format(scoring_function)
 
     return results
 
