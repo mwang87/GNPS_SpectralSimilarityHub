@@ -2,6 +2,7 @@ import os
 import sys
 import uuid
 import pandas as pd
+import shutil
 
 def get_mgf_string(spectrum_dict):
     output_lines = []
@@ -49,7 +50,6 @@ def calculate_gnps(spectrum1_dict, spectrum2_dict):
         temp_aligns,
         temp_mgf)
 
-    
     ret = os.system(cmd)
     
     # Reading the data
@@ -57,5 +57,11 @@ def calculate_gnps(spectrum1_dict, spectrum2_dict):
 
     scores = {}
     scores["score"] = df.to_dict(orient="records")[0]["Cosine"]
+
+    # Clean up
+    try:
+        shutil.rmtree(temp_folder)
+    except:
+        pass
 
     return scores

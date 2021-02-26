@@ -51,8 +51,8 @@ def calculate_spec2vec(spectrum1_dict, spectrum2_dict):
     mz2 = [peak[0] for peak in spectrum2_dict["peaks"]]
     int2 = [peak[1] for peak in spectrum2_dict["peaks"]]
 
-    s1 = Spectrum(np.array(mz1), np.array(int1), metadata1)
-    s2 = Spectrum(np.array(mz2), np.array(int2), metadata2)
+    s1 = Spectrum(np.array(mz1), np.sqrt(np.array(int1)), metadata1)
+    s2 = Spectrum(np.array(mz2), np.sqrt(np.array(int2)), metadata2)
 
     norm_s1 = normalize_intensities(s1)
     norm_s2 = normalize_intensities(s2)

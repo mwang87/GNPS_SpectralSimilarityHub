@@ -11,7 +11,7 @@ from dash.dependencies import Input, Output, State
 import os
 from zipfile import ZipFile
 import urllib.parse
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, request
 
 import pandas as pd
 import requests
@@ -39,7 +39,7 @@ cache = Cache(app.server, config={
     'CACHE_TYPE': 'filesystem',
     'CACHE_DIR': 'temp/flask-cache',
     'CACHE_DEFAULT_TIMEOUT': 0,
-    'CACHE_THRESHOLD': 10000
+    'CACHE_THRESHOLD': 1000000000
 })
 
 server = app.server
@@ -205,20 +205,15 @@ def draw_link(      usi1, usi2):
 
     return [provenance_link_object]
 
-import requests
+
+@cache.memoize()
 def get_usi_peaks(usi):
     url = "https://metabolomics-usi.ucsd.edu/json/?usi={}".format(usi)
     r = requests.get(url)
     return r.json()
 
-@app.callback([
-                Output('output', 'children')
-              ],
-              [
-                  Input('usi1', 'value'),
-                  Input('usi2', 'value'),
-            ])
-def draw_output(usi1, usi2):
+@cache.memoize()
+def _calculate_scores(usi1, usi2):
     # Getting the USI
     spec1 = get_usi_peaks(usi1)
     spec2 = get_usi_peaks(usi2)
@@ -244,6 +239,18 @@ def draw_output(usi1, usi2):
             real_result_list.append(result)
         except:
             pass
+        
+    return real_result_list
+
+@app.callback([
+                Output('output', 'children')
+              ],
+              [
+                  Input('usi1', 'value'),
+                  Input('usi2', 'value'),
+            ])
+def draw_output(usi1, usi2):
+    real_result_list = _calculate_scores(usi1, usi2)
 
     # Showing the spectra
     image_obj = html.Img(
@@ -252,10 +259,18 @@ def draw_output(usi1, usi2):
     
     table = dbc.Table.from_dataframe(pd.DataFrame(real_result_list), striped=True, bordered=True, hover=True)
 
-
-
-
     return [[image_obj, html.Br(), table]]
+
+# API
+@server.route("/api/comparison")
+def comparison_api():
+    usi1 = request.values.get("usi1")
+    usi2 = request.values.get("usi2")
+
+    all_results = _calculate_scores(usi1, usi2)
+
+    return json.dumps(all_results) 
+
 
 
 if __name__ == "__main__":
