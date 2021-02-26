@@ -30,11 +30,11 @@ def calculate_gnps(spectrum1_dict, spectrum2_dict):
     with open(temp_params, "w") as o:
         o.write("ALIGNS_FORMAT={}\n".format("tsv"))
         o.write("MIN_MATCHED_PEAKS={}\n".format(1))
-        o.write("TOLERANCE_PEAK={}\n".format(0.1))
-        o.write("TOLERANCE_PM={}\n".format(0.1))
+        o.write("TOLERANCE_PEAK={}\n".format(0.5))
+        o.write("TOLERANCE_PM={}\n".format(2.0))
         o.write("PAIRS_MIN_COSINE={}\n".format(0.1))
         o.write("MAX_SHIFT={}\n".format("9999"))
-        o.write("MIN_RATIO={}\n".format("0.4"))
+        o.write("MIN_RATIO={}\n".format("0.1"))
         o.write("INPUT_SPECTRA_MS2={}\n".format(temp_mgf))
 
     with open(temp_mgf, "w") as o:

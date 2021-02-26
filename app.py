@@ -36,7 +36,8 @@ app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTST
 app.title = 'GNPS - Similarity'
 
 cache = Cache(app.server, config={
-    'CACHE_TYPE': 'filesystem',
+#    'CACHE_TYPE': 'filesystem',
+    'CACHE_TYPE': 'null',
     'CACHE_DIR': 'temp/flask-cache',
     'CACHE_DEFAULT_TIMEOUT': 0,
     'CACHE_THRESHOLD': 1000000000
