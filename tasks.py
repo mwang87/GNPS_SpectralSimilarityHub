@@ -30,8 +30,8 @@ def task_computeheartbeat():
     return "Up"
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_gnpsalignment(spectrum1_dict, spectrum2_dict):
-    score = run_gnps.calculate_gnps(spectrum1_dict, spectrum2_dict)
+def tasks_compute_similarity_gnpsalignment(spectrum1_dict, spectrum2_dict, alignment_params={}):
+    score = run_gnps.calculate_gnps(spectrum1_dict, spectrum2_dict, alignment_params=alignment_params)
 
     results = {}
     results["sim"] = score["score"]
@@ -40,7 +40,7 @@ def tasks_compute_similarity_gnpsalignment(spectrum1_dict, spectrum2_dict):
     return results
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_usi(spectrum1_dict, spectrum2_dict):
+def tasks_compute_similarity_usi(spectrum1_dict, spectrum2_dict, alignment_params={}):
     results = {}
     results["sim"] = 1.0
     results["matched_peaks"] = 6
@@ -49,8 +49,8 @@ def tasks_compute_similarity_usi(spectrum1_dict, spectrum2_dict):
     return results
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_matchms(spectrum1_dict, spectrum2_dict):
-    score = run_spec2vec.calculate_modified_cosine(spectrum1_dict, spectrum2_dict)
+def tasks_compute_similarity_matchms(spectrum1_dict, spectrum2_dict, alignment_params={}):
+    score = run_spec2vec.calculate_modified_cosine(spectrum1_dict, spectrum2_dict, alignment_params=alignment_params)
 
     results = {}
     results["sim"] = float(score["score"].flat[0])
@@ -60,8 +60,8 @@ def tasks_compute_similarity_matchms(spectrum1_dict, spectrum2_dict):
     return results
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_spec2vec(spectrum1_dict, spectrum2_dict):
-    score = run_spec2vec.calculate_spec2vec(spectrum1_dict, spectrum2_dict)
+def tasks_compute_similarity_spec2vec(spectrum1_dict, spectrum2_dict, alignment_params={}):
+    score = run_spec2vec.calculate_spec2vec(spectrum1_dict, spectrum2_dict, alignment_params=alignment_params)
 
     results = {}
     results["sim"] = score
@@ -70,8 +70,8 @@ def tasks_compute_similarity_spec2vec(spectrum1_dict, spectrum2_dict):
     return results
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_simile(spectrum1_dict, spectrum2_dict):
-    score = run_simile.calculate_simile(spectrum1_dict, spectrum2_dict)
+def tasks_compute_similarity_simile(spectrum1_dict, spectrum2_dict, alignment_params={}):
+    score = run_simile.calculate_simile(spectrum1_dict, spectrum2_dict, alignment_params=alignment_params)
 
     results = {}
     results["sim"] = score["score"]

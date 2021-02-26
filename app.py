@@ -82,6 +82,14 @@ DATASELECTION_CARD = [
                 ],
                 className="mb-3",
             ),
+            html.Br(),
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupAddon("MS2 Peak Tolerance", addon_type="prepend"),
+                    dbc.Input(id='peak_tolerance', placeholder="Enter Tolerance", value="0.5"),
+                ],
+                className="mb-3",
+            ),
         ]
     )
 ]
@@ -167,6 +175,7 @@ def _get_url_param(param_dict, key, default):
 @app.callback([
                 Output('usi1', 'value'), 
                 Output('usi2', 'value'), 
+                Output('peak_tolerance', 'value')
               ],
               [
                   Input('url', 'search')
@@ -183,8 +192,9 @@ def determine_task(search):
 
     usi1 = _get_url_param(query_dict, "usi1", 'mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1943')
     usi2 = _get_url_param(query_dict, "usi2", 'mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1943')
+    peak_tolerance = _get_url_param(query_dict, "peak_tolerance", dash.no_update)
 
-    return [usi1, usi2]
+    return [usi1, usi2, peak_tolerance]
 
 
 @app.callback([
@@ -193,12 +203,14 @@ def determine_task(search):
               [
                   Input('usi1', 'value'),
                   Input('usi2', 'value'),
+                  Input('peak_tolerance', 'value')
               ])
-def draw_link(      usi1, usi2):
+def draw_link(      usi1, usi2, peak_tolerance):
     # Creating Reproducible URL for Plot
     url_params = {}
     url_params["usi1"] = usi1
     url_params["usi2"] = usi2
+    url_params["peak_tolerance"] = peak_tolerance
     
     url_provenance = dbc.Button("Link to this Plot", block=True, color="primary", className="mr-1")
     provenance_link_object = dcc.Link(url_provenance, href="/?" + urllib.parse.urlencode(url_params) , target="_blank")
@@ -213,20 +225,18 @@ def get_usi_peaks(usi):
     return r.json()
 
 @cache.memoize()
-def _calculate_scores(usi1, usi2):
+def _calculate_scores(usi1, usi2, alignment_params={}):
     # Getting the USI
     spec1 = get_usi_peaks(usi1)
     spec2 = get_usi_peaks(usi2)
 
-
-    usi_results = tasks.tasks_compute_similarity_usi.delay(spec1, spec2)
-    matchms_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2)
-    spec2vec_results = tasks.tasks_compute_similarity_spec2vec.delay(spec1, spec2)
-    simile_results = tasks.tasks_compute_similarity_simile.delay(spec1, spec2)
-    gnps_results = tasks.tasks_compute_similarity_gnpsalignment.delay(spec1, spec2)
+    usi_results = tasks.tasks_compute_similarity_usi.delay(spec1, spec2, alignment_params=alignment_params)
+    matchms_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, alignment_params=alignment_params)
+    spec2vec_results = tasks.tasks_compute_similarity_spec2vec.delay(spec1, spec2, alignment_params=alignment_params)
+    simile_results = tasks.tasks_compute_similarity_simile.delay(spec1, spec2, alignment_params=alignment_params)
+    gnps_results = tasks.tasks_compute_similarity_gnpsalignment.delay(spec1, spec2, alignment_params=alignment_params)
     
-    result_list = [usi_results, 
-                    matchms_results,
+    result_list = [ matchms_results,
                     spec2vec_results,
                     simile_results, 
                     gnps_results]
@@ -248,13 +258,17 @@ def _calculate_scores(usi1, usi2):
               [
                   Input('usi1', 'value'),
                   Input('usi2', 'value'),
+                  Input('peak_tolerance', 'value')
             ])
-def draw_output(usi1, usi2):
-    real_result_list = _calculate_scores(usi1, usi2)
+def draw_output(usi1, usi2, peak_tolerance):
+    alignment_params = {}
+    alignment_params["peak_tolerance"] = float(peak_tolerance)
+
+    real_result_list = _calculate_scores(usi1, usi2, alignment_params=alignment_params)
 
     # Showing the spectra
     image_obj = html.Img(
-        src='https://metabolomics-usi.ucsd.edu/svg/mirror?usi1={}&usi2={}&cosine=shifted'.format(usi1, usi2),
+        src='https://metabolomics-usi.ucsd.edu/svg/mirror?usi1={}&usi2={}&cosine=shifted&fragment_mz_tolerance={}'.format(usi1, usi2, peak_tolerance),
     )
     
     table = dbc.Table.from_dataframe(pd.DataFrame(real_result_list), striped=True, bordered=True, hover=True)

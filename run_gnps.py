@@ -17,7 +17,7 @@ def get_mgf_string(spectrum_dict):
 
     return "\n".join(output_lines)
 
-def calculate_gnps(spectrum1_dict, spectrum2_dict):
+def calculate_gnps(spectrum1_dict, spectrum2_dict, alignment_params={}):
     temp_folder="./temp/{}".format(str(uuid.uuid4()))
     os.makedirs(temp_folder, exist_ok=True)
 
@@ -30,7 +30,7 @@ def calculate_gnps(spectrum1_dict, spectrum2_dict):
     with open(temp_params, "w") as o:
         o.write("ALIGNS_FORMAT={}\n".format("tsv"))
         o.write("MIN_MATCHED_PEAKS={}\n".format(1))
-        o.write("TOLERANCE_PEAK={}\n".format(0.5))
+        o.write("TOLERANCE_PEAK={}\n".format(alignment_params.get("peak_tolerance", 0.5)))
         o.write("TOLERANCE_PM={}\n".format(2.0))
         o.write("PAIRS_MIN_COSINE={}\n".format(0.1))
         o.write("MAX_SHIFT={}\n".format("9999"))

@@ -21,7 +21,7 @@ from spec2vec import SpectrumDocument
 # Doing actual spec2vec
 model = gensim.models.Word2Vec.load("./bin/spec2vec/spec2vec_UniqueInchikeys_ratio05_filtered_iter_50.model")
 
-def calculate_modified_cosine(spectrum1_dict, spectrum2_dict):
+def calculate_modified_cosine(spectrum1_dict, spectrum2_dict, alignment_params={}):
     metadata1 = {"precursor_mz": spectrum1_dict["precursor_mz"]}
     metadata2 = {"precursor_mz": spectrum2_dict["precursor_mz"]}
 
@@ -36,12 +36,12 @@ def calculate_modified_cosine(spectrum1_dict, spectrum2_dict):
 
     norm_s1 = normalize_intensities(s1)
     norm_s2 = normalize_intensities(s2)
-    modified_cosine = ModifiedCosine()
+    modified_cosine = ModifiedCosine(tolerance=alignment_params.get("peak_tolerance"))
     score = modified_cosine.pair(norm_s1, norm_s2)
 
     return score
 
-def calculate_spec2vec(spectrum1_dict, spectrum2_dict):
+def calculate_spec2vec(spectrum1_dict, spectrum2_dict, alignment_params={}):
     metadata1 = {"precursor_mz": spectrum1_dict["precursor_mz"]}
     metadata2 = {"precursor_mz": spectrum2_dict["precursor_mz"]}
 

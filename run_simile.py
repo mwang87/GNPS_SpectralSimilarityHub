@@ -1,7 +1,7 @@
 import simile.simile as sml
 import numpy as np
 
-def calculate_simile(spectrum1_dict, spectrum2_dict):
+def calculate_simile(spectrum1_dict, spectrum2_dict, alignment_params={}):
     s1 = spectrum1_dict
     s2 = spectrum2_dict
 
@@ -18,7 +18,7 @@ def calculate_simile(spectrum1_dict, spectrum2_dict):
 
     # Generate pair-specific substitution matrix
     # S = sml.substitution_matrix(s1[0], s2[0], tolerance=0.01)
-    S = sml.substitution_matrix(mzi1[0], mzi2[0], tolerance=.01)
+    S = sml.substitution_matrix(mzi1[0], mzi2[0], tolerance=alignment_params.get("peak_tolerance", 0.1))
 
     # Align and score using upper-right quadrant of substitution matrix
     simile_score, simile_alignment1 = sml.pairwise_align(S[:mzi1.shape[1], mzi1.shape[1]:])
