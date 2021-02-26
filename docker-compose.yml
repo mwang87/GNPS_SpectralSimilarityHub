@@ -22,6 +22,34 @@ services:
       LETSENCRYPT_HOST: gnps-similarity.ucsd.edu
       LETSENCRYPT_EMAIL: miw023@ucsd.edu
 
+  
+  gnpssimilarity-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gnpssimilarity-worker
+    volumes:
+      - ./logs:/app/logs:rw
+    command: /app/run_worker.sh
+    restart: unless-stopped
+    depends_on: 
+      - gnpssimilarity-redis
+      - gnpssimilarity-rabbitmq
+    networks:
+      - default
+      - nginx-net
+
+  gnpssimilarity-rabbitmq:
+    container_name: gnpssimilarity-rabbitmq
+    image: rabbitmq
+    networks:
+      - default
+
+  gnpssimilarity-redis:
+    container_name: gnpssimilarity-redis
+    image: redis
+    networks:
+      - default
 
 networks:
   nginx-net:

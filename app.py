@@ -28,7 +28,7 @@ from collections import defaultdict
 import uuid
 
 from flask_caching import Cache
-
+import tasks
 
 
 server = Flask(__name__)
@@ -254,7 +254,7 @@ def determine_task(search):
                   Input('usi2', 'value'),
             ])
 def draw_output(usi1, usi2):
-
+    tasks.task_computeheartbeat.delay()
 
     return [usi1+usi2]
 
