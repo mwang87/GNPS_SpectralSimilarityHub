@@ -254,7 +254,7 @@ def determine_task(search):
                   Input('usi2', 'value'),
             ])
 def draw_output(usi1, usi2):
-    tasks.task_computeheartbeat.delay()
+    
 
     return [usi1+usi2]
 

@@ -10,6 +10,12 @@ def task_computeheartbeat():
     return "Up"
 
 
+@celery_instance.task(time_limit=60)
+def tasks_compute_similarity_usi(usi1, usi2):
+    
+    return "Done"
+
+
 # celery_instance.conf.beat_schedule = {
 #     "cleanup": {
 #         "task": "tasks._task_cleanup",
