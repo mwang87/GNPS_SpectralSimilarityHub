@@ -254,9 +254,10 @@ def determine_task(search):
                   Input('usi2', 'value'),
             ])
 def draw_output(usi1, usi2):
-    
+    usi_results = tasks.tasks_compute_similarity_usi.delay(usi1, usi2)
+    usi_results = usi_results.get()
 
-    return [usi1+usi2]
+    return [json.dumps(usi_results)]
 
 
 if __name__ == "__main__":
