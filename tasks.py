@@ -66,8 +66,9 @@ def tasks_compute_similarity_simile(spectrum1_dict, spectrum2_dict):
     score = run_simile.calculate_simile(spectrum1_dict, spectrum2_dict)
 
     results = {}
-    results["sim"] = 1.0
-    results["matched_peaks"] = 6
+    results["sim"] = score["score"]
+    results["matched_peaks"] = score["aligns"]
+    results["pval"] = score["pval"]
     results["type"] = "simile"
 
     return results

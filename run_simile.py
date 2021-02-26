@@ -17,17 +17,19 @@ def calculate_simile(spectrum1_dict, spectrum2_dict):
     print(s2.shape)
 
     # Generate pair-specific substitution matrix
-    S = sml.substitution_matrix(s1, s2, tolerance=.01)
+    S = sml.substitution_matrix(s1[0], s2[0], tolerance=.01)
 
     # Align and score using upper-right quadrant of substitution matrix
     score, alignment = sml.pairwise_align(S[:len(s1),len(s2):])
 
     # Calculate significance of the alignment
-    pval = sml.alignment_test(S, s1, s2)
+    pval = sml.alignment_test(S, s1[0], s2[0])
 
     scores = {}
     scores["score"] = score
     scores["aligns"] = len(alignment)
     scores["pval"] = pval
+
+    print(scores)
 
     return scores
