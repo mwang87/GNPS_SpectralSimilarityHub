@@ -245,6 +245,11 @@ def determine_task(search):
 
 #     return [provenance_link_object]
 
+import requests
+def get_usi_peaks(usi):
+    url = "https://metabolomics-usi.ucsd.edu/json/?usi={}".format(usi)
+    r = requests.get(url)
+    return r.json()
 
 @app.callback([
                 Output('output', 'children')
@@ -254,10 +259,15 @@ def determine_task(search):
                   Input('usi2', 'value'),
             ])
 def draw_output(usi1, usi2):
-    usi_results = tasks.tasks_compute_similarity_usi.delay(usi1, usi2)
-    matchms_results = tasks.tasks_compute_similarity_matchms.delay(usi1, usi2)
-    spec2vec_results = tasks.tasks_compute_similarity_spec2vec.delay(usi1, usi2)
-    simile_results = tasks.tasks_compute_similarity_simile.delay(usi1, usi2)
+    # Getting the USI
+    spec1 = get_usi_peaks(usi1)
+    spec2 = get_usi_peaks(usi2)
+
+
+    usi_results = tasks.tasks_compute_similarity_usi.delay(spec1, spec2)
+    matchms_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2)
+    spec2vec_results = tasks.tasks_compute_similarity_spec2vec.delay(spec1, spec2)
+    simile_results = tasks.tasks_compute_similarity_simile.delay(spec1, spec2)
     
     usi_results = usi_results.get()
     matchms_results = matchms_results.get()
