@@ -255,9 +255,17 @@ def determine_task(search):
             ])
 def draw_output(usi1, usi2):
     usi_results = tasks.tasks_compute_similarity_usi.delay(usi1, usi2)
+    matchms_results = tasks.tasks_compute_similarity_matchms.delay(usi1, usi2)
+    spec2vec_results = tasks.tasks_compute_similarity_spec2vec.delay(usi1, usi2)
+    simile_results = tasks.tasks_compute_similarity_simile.delay(usi1, usi2)
+    
     usi_results = usi_results.get()
+    matchms_results = matchms_results.get()
+    spec2vec_results = spec2vec_results.get()
+    simile_results = simile_results.get()
 
-    return [json.dumps(usi_results)]
+
+    return [[json.dumps(usi_results), json.dumps(matchms_results), json.dumps(spec2vec_results), json.dumps(simile_results)]]
 
 
 if __name__ == "__main__":
