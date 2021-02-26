@@ -1,0 +1,29 @@
+version: '3'
+services:
+  gnpssimilarity-dash:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gnpssimilarity-dash
+    volumes:
+      - ./output:/app/output:rw
+      - ./logs:/app/logs:rw
+      - ./temp:/app/temp
+    ports:
+    - "5453:5000"
+    networks:
+      - default
+      - nginx-net
+    restart: unless-stopped
+    command: /app/run_server.sh
+    environment:
+      VIRTUAL_HOST: gnps-similarity.ucsd.edu
+      VIRTUAL_PORT: 5453
+      LETSENCRYPT_HOST: gnps-similarity.ucsd.edu
+      LETSENCRYPT_EMAIL: miw023@ucsd.edu
+
+
+networks:
+  nginx-net:
+    external:
+      name: nginx-net
