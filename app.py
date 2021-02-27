@@ -117,6 +117,21 @@ DATASELECTION_CARD = [
                 ],
                 className="mb-3",
             ),
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupAddon("Peak Filtering Options", addon_type="prepend"),
+                    dbc.Checklist(
+                        options=[
+                            {"label": "Top 6 in +/- 50 Da", "value": "window"},
+                            {"label": "Precursor Filter", "value": "precursor"},
+                        ],
+                        value=[],
+                        id="filter_switches",
+                        switch=True,
+                    ),
+                ],
+                className="mb-3",
+            ),
         ]
     )
 ]
@@ -202,7 +217,8 @@ def _get_url_param(param_dict, key, default):
 @app.callback([
                 Output('usi1', 'value'), 
                 Output('usi2', 'value'), 
-                Output('peak_tolerance', 'value')
+                Output('peak_tolerance', 'value'),
+                Output('filter_switches', 'value')
               ],
               [
                   Input('url', 'search')
@@ -220,8 +236,9 @@ def determine_task(search):
     usi1 = _get_url_param(query_dict, "usi1", 'mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1943')
     usi2 = _get_url_param(query_dict, "usi2", 'mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1943')
     peak_tolerance = _get_url_param(query_dict, "peak_tolerance", dash.no_update)
+    filter_switches = _get_url_param(query_dict, "filter_switches", dash.no_update)
 
-    return [usi1, usi2, peak_tolerance]
+    return [usi1, usi2, peak_tolerance, filter_switches]
 
 
 @app.callback([
@@ -230,14 +247,16 @@ def determine_task(search):
               [
                   Input('usi1', 'value'),
                   Input('usi2', 'value'),
-                  Input('peak_tolerance', 'value')
+                  Input('peak_tolerance', 'value'),
+                  Input('filter_switches', 'value'),
               ])
-def draw_link(      usi1, usi2, peak_tolerance):
+def draw_link(      usi1, usi2, peak_tolerance, filter_switches):
     # Creating Reproducible URL for Plot
     url_params = {}
     url_params["usi1"] = usi1
     url_params["usi2"] = usi2
     url_params["peak_tolerance"] = peak_tolerance
+    url_params["filter_switches"] = filter_switches
     
     url_provenance = dbc.Button("Link to this Plot", block=True, color="primary", className="mr-1")
     provenance_link_object = dcc.Link(url_provenance, href="/?" + urllib.parse.urlencode(url_params) , target="_blank")
@@ -256,6 +275,8 @@ def _calculate_scores(usi1, usi2, alignment_params={}):
     # Getting the USI
     spec1 = get_usi_peaks(usi1)
     spec2 = get_usi_peaks(usi2)
+
+    # TODO: Do the filtering here
 
     usi_results = tasks.tasks_compute_similarity_usi.delay(spec1, spec2, alignment_params=alignment_params)
     matchms_modified_cosine_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="modified_cosine", alignment_params=alignment_params)
@@ -288,11 +309,14 @@ def _calculate_scores(usi1, usi2, alignment_params={}):
               [
                   Input('usi1', 'value'),
                   Input('usi2', 'value'),
-                  Input('peak_tolerance', 'value')
+                  Input('peak_tolerance', 'value'),
+                  Input('filter_switches', 'value'),
             ])
-def draw_output(usi1, usi2, peak_tolerance):
+def draw_output(usi1, usi2, peak_tolerance, filter_switches):
     alignment_params = {}
     alignment_params["peak_tolerance"] = float(peak_tolerance)
+    alignment_params["precursor_filter"] = "precursor_filter" in filter_switches
+    alignment_params["window_filter"] = "window_filter" in filter_switches
 
     real_result_list = _calculate_scores(usi1, usi2, alignment_params=alignment_params)
 
