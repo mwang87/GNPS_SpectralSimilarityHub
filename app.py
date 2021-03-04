@@ -271,14 +271,23 @@ def get_usi_peaks(usi):
     return r.json()
 
 @cache.memoize()
+def get_usi_peaks_pairs(usi1, usi2):
+    url = "https://metabolomics-usi.ucsd.edu/json/mirror/?usi1={}&usi2={}".format(usi1, usi2)
+    result = requests.get(url).json()
+
+    return result
+
+
+@cache.memoize()
 def _calculate_scores(usi1, usi2, alignment_params={}):
     # Getting the USI
-    spec1 = get_usi_peaks(usi1)
-    spec2 = get_usi_peaks(usi2)
+    #spec1 = get_usi_peaks(usi1)
+    #spec2 = get_usi_peaks(usi2)
+    pair_spectrum_results = get_usi_peaks_pairs(usi1, usi2)
+    spec1 = pair_spectrum_results["spectrum1"]
+    spec2 = pair_spectrum_results["spectrum2"]
 
     # TODO: Do the filtering here
-
-    usi_results = tasks.tasks_compute_similarity_usi.delay(spec1, spec2, alignment_params=alignment_params)
     matchms_modified_cosine_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="modified_cosine", alignment_params=alignment_params)
     matchms_greedy_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="cosine_greedy", alignment_params=alignment_params)
 
@@ -293,6 +302,12 @@ def _calculate_scores(usi1, usi2, alignment_params={}):
                     gnps_results]
 
     real_result_list = []
+
+    real_result_list.append({
+                            "sim":pair_spectrum_results["cosine"], 
+                            "matched_peaks":pair_spectrum_results["n_peak_matches"],
+                            "type": "usi"
+                            })
 
     for result in result_list:
         try:

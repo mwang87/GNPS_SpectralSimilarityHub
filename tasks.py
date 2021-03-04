@@ -40,15 +40,6 @@ def tasks_compute_similarity_gnpsalignment(spectrum1_dict, spectrum2_dict, align
     return results
 
 @celery_instance.task(time_limit=60)
-def tasks_compute_similarity_usi(spectrum1_dict, spectrum2_dict, alignment_params={}):
-    results = {}
-    results["sim"] = 1.0
-    results["matched_peaks"] = 6
-    results["type"] = "usi"
-
-    return results
-
-@celery_instance.task(time_limit=60)
 def tasks_compute_similarity_matchms(spectrum1_dict, spectrum2_dict, scoring_function="modified_cosine", alignment_params={}):
     score = run_spec2vec.calculate_matchms(spectrum1_dict, spectrum2_dict, scoring_function=scoring_function, alignment_params=alignment_params)
 
