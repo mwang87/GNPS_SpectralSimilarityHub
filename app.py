@@ -271,8 +271,8 @@ def get_usi_peaks(usi):
     return r.json()
 
 @cache.memoize()
-def get_usi_peaks_pairs(usi1, usi2):
-    url = "https://metabolomics-usi.ucsd.edu/json/mirror/?usi1={}&usi2={}".format(usi1, usi2)
+def get_usi_peaks_pairs(usi1, usi2, tolerance):
+    url = "https://metabolomics-usi.ucsd.edu/json/mirror/?usi1={}&usi2={}&cosine=shifted&fragment_mz_tolerance={}".format(usi1, usi2, tolerance)
     result = requests.get(url).json()
 
     return result
@@ -283,7 +283,7 @@ def _calculate_scores(usi1, usi2, alignment_params={}):
     # Getting the USI
     #spec1 = get_usi_peaks(usi1)
     #spec2 = get_usi_peaks(usi2)
-    pair_spectrum_results = get_usi_peaks_pairs(usi1, usi2)
+    pair_spectrum_results = get_usi_peaks_pairs(usi1, usi2, alignment_params["peak_tolerance"])
     spec1 = pair_spectrum_results["spectrum1"]
     spec2 = pair_spectrum_results["spectrum2"]
 
