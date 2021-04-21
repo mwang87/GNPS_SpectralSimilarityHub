@@ -83,6 +83,7 @@ services:
     volumes:
       - ./logs:/app/logs:rw
       - ./bin:/app/bin:ro
+      - ./bin/ms2deepscore:/models:ro
     command: /app/run_worker_ms2deepscore.sh
     restart: unless-stopped
     depends_on: 
