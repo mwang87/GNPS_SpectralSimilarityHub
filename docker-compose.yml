@@ -92,6 +92,18 @@ services:
       - default
       - nginx-net
 
+  ms2deepscore-tf-server:
+    image: tensorflow/serving:2.4.0
+    volumes:
+        - ./bin/ms2deepscore:/models
+        - ./bin/ms2deepscore/models.config:/models/models.config
+    restart: on-failure
+    ports:
+      - "8501:8501"
+    networks:
+      - default
+    command: --model_config_file=/models/models.config
+
   gnpssimilarity-rabbitmq:
     container_name: gnpssimilarity-rabbitmq
     image: rabbitmq
