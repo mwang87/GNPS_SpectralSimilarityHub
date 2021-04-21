@@ -171,7 +171,15 @@ CONTRIBUTORS_DASHBOARD = [
             html.Br(),
             html.H5("Citation"),
             html.A('Mingxun Wang, Jeremy J. Carver, Vanessa V. Phelan, Laura M. Sanchez, Neha Garg, Yao Peng, Don Duy Nguyen et al. "Sharing and community curation of mass spectrometry data with Global Natural Products Social Molecular Networking." Nature biotechnology 34, no. 8 (2016): 828. PMID: 27504778', 
-                    href="https://www.nature.com/articles/nbt.3597")
+                    href="https://www.nature.com/articles/nbt.3597"),
+            html.A('Huber, F., Ridder, L., Verhoeven, S., Spaaks, J. H., Diblen, F., Rogers, S., & van der Hooft, J. J. (2021). Spec2Vec: Improved mass spectral similarity scoring through learning of structural relationships. PLoS computational biology, 17(2), e1008724.', 
+                    href="https://journals.plos.org/ploscompbiol/article?rev=1&id=10.1371/journal.pcbi.1008724"),
+            html.A('Treen, Daniel GC, Trent R. Northen, and Ben Bowen. "SIMILE enables alignment of fragmentation mass spectra with statistical significance." bioRxiv (2021).', 
+                    href="https://www.biorxiv.org/content/10.1101/2021.02.24.432767v1"),
+            html.A('Huber, F., Verhoeven, S., Meijer, C., Spreeuw, H., Castilla, E., Geng, C., ... & Spaaks, J. (2020). matchms-processing and similarity evaluation of mass spectrometry data. Journal of Open Source Software, 5(52).', 
+                    href="https://eprints.gla.ac.uk/222785/"),
+            html.A('Florian Huber, Sven van der Burg, Justin J.J. van der Hooft, Lars Ridder.  MS2DeepScore - a novel deep learning similarity measure for mass fragmentation spectrum comparisons', 
+                    href="https://www.biorxiv.org/node/1907063"),
         ]
     )
 ]
@@ -292,12 +300,14 @@ def _calculate_scores(usi1, usi2, alignment_params={}):
     matchms_greedy_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="cosine_greedy", alignment_params=alignment_params)
 
     spec2vec_results = tasks.tasks_compute_similarity_spec2vec.delay(spec1, spec2, alignment_params=alignment_params)
+    ms2deepscore_results = tasks.tasks_compute_similarity_ms2deepscore.delay(spec1, spec2, alignment_params=alignment_params)
     simile_results = tasks.tasks_compute_similarity_simile.delay(spec1, spec2, alignment_params=alignment_params)
     gnps_results = tasks.tasks_compute_similarity_gnpsalignment.delay(spec1, spec2, alignment_params=alignment_params)
     
     result_list = [ matchms_modified_cosine_results,
                     matchms_greedy_results, 
                     spec2vec_results,
+                    ms2deepscore_results, 
                     simile_results, 
                     gnps_results]
 

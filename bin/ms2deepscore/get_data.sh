@@ -1,0 +1,1 @@
+wget https://zenodo.org/record/4699356/files/MS2DeepScore_allGNPSpositive_10k_500_500_200.hdf5?download=1 -O ms2deepscore_model.hdf5
