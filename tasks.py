@@ -13,12 +13,16 @@ except:
     print("SIMILE IMPORT FAILURE")
     pass
 
-
 try:
     import run_gnps
 except:
-    raise
     print("GNPS IMPORT FAILURE")
+    pass
+
+try:
+    import run_ms2deepscore
+except:
+    print("MS2Deep IMPORT FAILURE")
     pass
 
 
@@ -72,6 +76,16 @@ def tasks_compute_similarity_simile(spectrum1_dict, spectrum2_dict, alignment_pa
 
     return results
 
+@celery_instance.task(time_limit=60)
+def tasks_compute_similarity_ms2deepscore(spectrum1_dict, spectrum2_dict, alignment_params={}):
+    score = run_ms2deepscore.calculate_ms2deepscore(spectrum1_dict, spectrum2_dict, alignment_params=alignment_params)
+
+    results = {}
+    results["sim"] = score["score"]
+    results["type"] = "ms2deepscore"
+
+    return results
+
 # celery_instance.conf.beat_schedule = {
 #     "cleanup": {
 #         "task": "tasks._task_cleanup",
@@ -91,4 +105,5 @@ celery_instance.conf.task_routes = {
     'tasks.tasks_compute_similarity_matchms': {'queue': 'spec2vec'},
 
     'tasks.tasks_compute_similarity_simile': {'queue': 'simile'},
+    'tasks.tasks_compute_similarity_ms2deepscore': {'queue': 'ms2deepscore'},
 }

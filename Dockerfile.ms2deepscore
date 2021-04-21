@@ -1,0 +1,16 @@
+FROM continuumio/miniconda3:4.7.12
+MAINTAINER Mingxun Wang "mwang87@gmail.com"
+
+RUN apt-get update && apt-get install -y build-essential libssl-dev libffi-dev python-dev
+
+RUN conda install -c conda-forge mamba
+RUN mamba create -n ms2deepscore python=3.8
+RUN mamba install -n ms2deepscore --channel nlesc --channel bioconda --channel conda-forge matchms
+
+COPY requirements.txt .
+RUN /bin/bash -c 'source activate ms2deepscore && pip install ms2deepscore'
+RUN /bin/bash -c 'source activate ms2deepscore && pip install -r requirements.txt'
+
+COPY . /app
+WORKDIR /app
+
