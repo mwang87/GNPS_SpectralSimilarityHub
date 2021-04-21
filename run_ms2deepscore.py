@@ -9,7 +9,7 @@ from ms2deepscore.models import SiameseModel, load_model
 from matchms import Scores, Spectrum
 from matchms.filtering import normalize_intensities
 
-model_file = "./bin/ms2deepscore/ms2deepscore_model.hdf5"
+model_file = "/models/ms2deepscore_model.hdf5"
 model = load_model(model_file)
 similarity_measure = MS2DeepScore(model)
 
