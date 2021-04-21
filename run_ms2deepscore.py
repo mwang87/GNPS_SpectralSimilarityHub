@@ -1,6 +1,12 @@
+import numpy as np
+import pandas as pd
+
+from ms2deepscore import MS2DeepScore
 from ms2deepscore import SpectrumBinner
 from ms2deepscore.models import SiameseModel, load_model
 from matchms import Scores, Spectrum
+from matchms.filtering import normalize_intensities
+
 
 model_file = "./bin/ms2deepscore/ms2deepscore_model.hdf5"
 model = load_model(model_file)

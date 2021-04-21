@@ -82,7 +82,6 @@ def tasks_compute_similarity_ms2deepscore(spectrum1_dict, spectrum2_dict, alignm
 
     results = {}
     results["sim"] = score["score"]
-    results["pval"] = score["pval"]
     results["type"] = "ms2deepscore"
 
     return results
