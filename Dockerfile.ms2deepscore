@@ -5,9 +5,10 @@ RUN apt-get update && apt-get install -y build-essential libssl-dev libffi-dev p
 
 RUN conda install -c conda-forge mamba
 RUN mamba create -n ms2deepscore python=3.8
+RUN mamba install -n ms2deepscore --channel nlesc --channel bioconda --channel conda-forge matchms
 
 COPY requirements.txt .
-RUN /bin/bash -c 'source activate ms2deepscore && pip install -r requirements.txt'
+RUN /bin/bash -c 'source activate ms2deepscore && pip install ms2deepscore'
 RUN /bin/bash -c 'source activate ms2deepscore && pip install -r requirements.txt'
 
 COPY . /app

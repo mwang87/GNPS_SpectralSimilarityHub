@@ -13,12 +13,16 @@ except:
     print("SIMILE IMPORT FAILURE")
     pass
 
-
 try:
     import run_gnps
 except:
-    raise
     print("GNPS IMPORT FAILURE")
+    pass
+
+try:
+    import run_ms2deepscore
+except:
+    print("MS2Deep IMPORT FAILURE")
     pass
 
 

@@ -1,5 +1,6 @@
 from ms2deepscore import SpectrumBinner
 from ms2deepscore.models import SiameseModel, load_model
+from matchms import Scores, Spectrum
 
 model_file = "./bin/ms2deepscore/ms2deepscore_model.hdf5"
 model = load_model(model_file)
