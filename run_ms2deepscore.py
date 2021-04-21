@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import json
+import requests
 
 from ms2deepscore import MS2DeepScore
 from ms2deepscore import SpectrumBinner
@@ -7,15 +9,9 @@ from ms2deepscore.models import SiameseModel, load_model
 from matchms import Scores, Spectrum
 from matchms.filtering import normalize_intensities
 
-
 model_file = "./bin/ms2deepscore/ms2deepscore_model.hdf5"
 model = load_model(model_file)
-
-number_of_bins = 10000
-mz_max = 1000.0
-mz_min = 10.0
-spectrum_binner = SpectrumBinner(number_of_bins, mz_min=mz_min, mz_max=mz_max, peak_scaling=0.5)
-
+similarity_measure = MS2DeepScore(model)
 
 def calculate_ms2deepscore(spectrum1_dict, spectrum2_dict, alignment_params={}):
     metadata1 = {"precursor_mz": spectrum1_dict["precursor_mz"]}
@@ -33,26 +29,24 @@ def calculate_ms2deepscore(spectrum1_dict, spectrum2_dict, alignment_params={}):
     #norm_s1 = normalize_intensities(s1)
     #norm_s2 = normalize_intensities(s2)
 
-    #similarity_measure = MS2DeepScore(model)
-    #score = similarity_measure.pair(norm_s1, norm_s2)
+    binned_spectrum1 = similarity_measure.model.spectrum_binner.transform([s1])[0]
+    binned_spectrum2 = similarity_measure.model.spectrum_binner.transform([s2])[0]
 
-    # We need to go out to web api to do this
-    binned1 = spectrum_binner.transform([s1])[0]
-    binned2 = spectrum_binner.transform([s2])[0]
-
-    print(binned1, binned2)
+    my_vector1 = similarity_measure._create_input_vector(binned_spectrum1)
+    my_vector2 = similarity_measure._create_input_vector(binned_spectrum2)
 
     query_dict = {}
-    query_dict["input_a"] = binned1
-    query_dict["input_b"] = binned2
+    query_dict["input_a"] = my_vector1.tolist()[0]
+    query_dict["input_b"] = my_vector2.tolist()[0]
 
-    # Handling SUPERCLASS
-    fp_pred_url = "http://ms2deepscore-tf-server:8501/v1/models/MS2DEEPSCORE:predict"
+    pred_url = "http://ms2deepscore-tf-server:8501/v1/models/MS2DEEPSCORE:predict"
     payload = json.dumps({"instances": [ query_dict ]})
 
     headers = {"content-type": "application/json"}
-    json_response = requests.post(fp_pred_url, data=payload, headers=headers)
+    json_response = requests.post(pred_url, data=payload, headers=headers)
+    score = json_response.json()["predictions"][0]
 
-    pred_super = np.asarray(json.loads(json_response.text)['predictions'])[0]
+    scores = {}
+    scores["score"] = score
 
-    return 0.0
+    return scores
