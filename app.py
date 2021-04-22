@@ -291,14 +291,24 @@ def get_usi_peaks_pairs(usi1, usi2, tolerance):
 
 
 @cache.memoize()
-def _calculate_scores(usi1, usi2, alignment_params={}):
+def _calculate_scores_usi(usi1, usi2, alignment_params={}):
     # Getting the USI
-    #spec1 = get_usi_peaks(usi1)
-    #spec2 = get_usi_peaks(usi2)
     pair_spectrum_results = get_usi_peaks_pairs(usi1, usi2, alignment_params["peak_tolerance"])
     spec1 = pair_spectrum_results["spectrum1"]
     spec2 = pair_spectrum_results["spectrum2"]
 
+    real_result_list = _calculate_scores_peaks(spec1, spec2, alignment_params=alignment_params)
+
+    real_result_list.append({
+                            "sim":pair_spectrum_results["cosine"], 
+                            "matched_peaks":pair_spectrum_results["n_peak_matches"],
+                            "type": "usi"
+                            })
+
+        
+    return real_result_list
+
+def _calculate_scores_peaks(spec1, spec2, alignment_params={}):
     # TODO: Do the filtering here
     matchms_modified_cosine_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="modified_cosine", alignment_params=alignment_params)
     matchms_greedy_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="cosine_greedy", alignment_params=alignment_params)
@@ -317,12 +327,6 @@ def _calculate_scores(usi1, usi2, alignment_params={}):
 
     real_result_list = []
 
-    real_result_list.append({
-                            "sim":pair_spectrum_results["cosine"], 
-                            "matched_peaks":pair_spectrum_results["n_peak_matches"],
-                            "type": "usi"
-                            })
-
     for result in result_list:
         try:
             result = result.get()
@@ -331,6 +335,7 @@ def _calculate_scores(usi1, usi2, alignment_params={}):
             pass
         
     return real_result_list
+
 
 @app.callback([
                 Output('output', 'children')
@@ -347,7 +352,7 @@ def draw_output(usi1, usi2, peak_tolerance, filter_switches):
     alignment_params["precursor_filter"] = "precursor_filter" in filter_switches
     alignment_params["window_filter"] = "window_filter" in filter_switches
 
-    real_result_list = _calculate_scores(usi1, usi2, alignment_params=alignment_params)
+    real_result_list = _calculate_scores_usi(usi1, usi2, alignment_params=alignment_params)
 
     # Showing the spectra
     image_obj = html.Img(
@@ -359,12 +364,26 @@ def draw_output(usi1, usi2, peak_tolerance, filter_switches):
     return [[image_obj, html.Br(), table]]
 
 # API
-@server.route("/api/comparison")
+@server.route("/api/comparison", methods = ['POST', 'GET'])
 def comparison_api():
-    usi1 = request.values.get("usi1")
-    usi2 = request.values.get("usi2")
+    if "usi1" in request.values:
+        # USI version
+        usi1 = request.values.get("usi1")
+        usi2 = request.values.get("usi2")
 
-    all_results = _calculate_scores(usi1, usi2)
+        all_results = _calculate_scores_usi(usi1, usi2, alignment_params=dict(request.values))
+    else:
+        import sys
+        print(request.values.get("spec1"), file=sys.stderr, flush=True)
+        
+        spec1 = json.loads(request.values.get("spec1"))
+        spec2 = json.loads(request.values.get("spec2"))
+
+        import sys
+        print(spec1, spec2, file=sys.stderr, flush=True)
+
+        all_results = _calculate_scores_peaks(spec1, spec2, alignment_params=dict(request.values))
+
 
     return json.dumps(all_results) 
 
