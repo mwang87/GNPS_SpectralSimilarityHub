@@ -373,14 +373,9 @@ def comparison_api():
 
         all_results = _calculate_scores_usi(usi1, usi2, alignment_params=dict(request.values))
     else:
-        import sys
-        print(request.values.get("spec1"), file=sys.stderr, flush=True)
-        
+        # Peaks version
         spec1 = json.loads(request.values.get("spec1"))
         spec2 = json.loads(request.values.get("spec2"))
-
-        import sys
-        print(spec1, spec2, file=sys.stderr, flush=True)
 
         all_results = _calculate_scores_peaks(spec1, spec2, alignment_params=dict(request.values))
 
