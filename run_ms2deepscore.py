@@ -47,6 +47,6 @@ def calculate_ms2deepscore(spectrum1_dict, spectrum2_dict, alignment_params={}):
     score = json_response.json()["predictions"][0]
 
     scores = {}
-    scores["score"] = score
+    scores["score"] = score[0]
 
     return scores
