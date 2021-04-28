@@ -38,9 +38,9 @@ def calculate_matchms(spectrum1_dict, spectrum2_dict, scoring_function="modified
     norm_s2 = normalize_intensities(s2)
 
     if scoring_function == "modified_cosine":
-        score_function = ModifiedCosine(tolerance=alignment_params.get("peak_tolerance"))
+        score_function = ModifiedCosine(tolerance=float(alignment_params.get("peak_tolerance")))
     elif scoring_function == "cosine_greedy":
-        score_function = CosineGreedy(tolerance=alignment_params.get("peak_tolerance"))
+        score_function = CosineGreedy(tolerance=float(alignment_params.get("peak_tolerance")))
         
     score = score_function.pair(norm_s1, norm_s2)
 
