@@ -10,6 +10,7 @@ def test_usi_api():
 
     r = requests.get(url, params=params)
     print(r.json())
+    assert(len(r.json()) > 6)
 
 def test_peaks_api():
     url = "{}/api/comparison".format("https://gnps-similarity.ucsd.edu")
@@ -23,5 +24,6 @@ def test_peaks_api():
     params["peak_tolerance"] = 0.5
 
     r = requests.post(url, data=params)
-    assert(len(r.json()) > 6)
-    print(r.json())
+    print(len(r.json()))
+    assert(len(r.json()) > 5)
+    
