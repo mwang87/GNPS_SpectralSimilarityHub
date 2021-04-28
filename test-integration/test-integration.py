@@ -23,4 +23,5 @@ def test_peaks_api():
     params["peak_tolerance"] = 0.5
 
     r = requests.post(url, data=params)
+    assert(len(r.json()) > 6)
     print(r.json())
