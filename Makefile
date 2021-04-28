@@ -12,3 +12,6 @@ server-compose:
 
 attach:
 	docker exec -i -t gnpssimilarity-worker /bin/bash
+
+clear-cache:
+	rm temp/* -rf
