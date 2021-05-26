@@ -15,8 +15,8 @@ def test_usi_api():
 def test_peaks_api():
     url = "{}/api/comparison".format("https://gnps-similarity.ucsd.edu")
 
-    spec1 = requests.get("https://metabolomics-usi.ucsd.edu/json/?usi={}".format("mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1943"))
-    spec2 = requests.get("https://metabolomics-usi.ucsd.edu/json/?usi={}".format("mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1969"))
+    spec1 = requests.get("https://metabolomics-usi.ucsd.edu/json/?usi1={}".format("mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1943"))
+    spec2 = requests.get("https://metabolomics-usi.ucsd.edu/json/?usi1={}".format("mzspec:GNPS:TASK-c95481f0c53d42e78a61bf899e9f9adb-spectra/specs_ms.mgf:scan:1969"))
 
     params = {}
     params["spec1"] = json.dumps(spec1.json())

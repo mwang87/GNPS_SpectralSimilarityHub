@@ -278,7 +278,7 @@ def draw_link(      usi1, usi2, peak_tolerance, filter_switches):
 
 @cache.memoize()
 def get_usi_peaks(usi):
-    url = "https://metabolomics-usi.ucsd.edu/json/?usi={}".format(usi)
+    url = "https://metabolomics-usi.ucsd.edu/json/?usi1={}".format(usi)
     r = requests.get(url)
     return r.json()
 
