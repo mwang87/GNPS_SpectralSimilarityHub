@@ -31,5 +31,7 @@ def calculate_simile(spectrum1_dict, spectrum2_dict, alignment_params={}):
     scores = {}
     scores["score"] = simile_score
     scores["pval"] = pval
+    scores["matched_peaks"] = len(simile_alignment1)
+    
 
     return scores

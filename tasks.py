@@ -77,7 +77,7 @@ def tasks_compute_similarity_simile(spectrum1_dict, spectrum2_dict, alignment_pa
 
     results = {}
     results["sim"] = score["score"]
-    #results["matched_peaks"] = score["aligns"]
+    results["matched_peaks"] = score["matched_peaks"]
     results["pval"] = score["pval"]
     results["type"] = "simile"
 
