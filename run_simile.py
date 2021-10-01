@@ -19,14 +19,14 @@ def calculate_simile(spectrum1_dict, spectrum2_dict, alignment_params={}):
     mzi2 = np.asarray([mz2,i2])
 
     # Generate pair-specific substitution matrix
-    # S = sml.substitution_matrix(s1[0], s2[0], tolerance=0.01)
-    S = sml.substitution_matrix(mzi1[0], mzi2[0], tolerance=float(alignment_params.get("peak_tolerance", 0.1)))
+    # S = sml.similarity_matrix(s1[0], s2[0], tolerance=0.01)
+    S = sml.similarity_matrix(mzi1[0], mzi2[0], tolerance=float(alignment_params.get("peak_tolerance", 0.1)))
 
     # Align and score using upper-right quadrant of substitution matrix
     simile_score, simile_alignment1 = sml.pairwise_align(S[:mzi1.shape[1], mzi1.shape[1]:])
 
     # Calculate significance of the alignment
-    pval = sml.alignment_test(S, mzi1[0], mzi2[0])
+    pval = sml.significance_test(S, mzi1[0], mzi2[0])
 
     scores = {}
     scores["score"] = simile_score
