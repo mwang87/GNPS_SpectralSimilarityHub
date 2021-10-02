@@ -8,28 +8,19 @@ import plotly.express as px
 import plotly.graph_objects as go 
 import dash_daq as daq
 from dash.dependencies import Input, Output, State
-import os
-from zipfile import ZipFile
 import urllib.parse
-from flask import Flask, send_from_directory, request
-
 import pandas as pd
 import requests
-import uuid
-import werkzeug
 
-import pymzml
 import numpy as np
-from tqdm import tqdm
 import urllib
 import json
 
+from flask import Flask, send_from_directory, request
 from collections import defaultdict
-import uuid
-
 from flask_caching import Cache
-import tasks
 
+import tasks
 
 server = Flask(__name__)
 app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -90,13 +81,26 @@ NAVBAR = dbc.Navbar(
 )
 
 DATASELECTION_CARD = [
-    dbc.CardHeader(html.H5("Data Selection")),
+    dbc.CardHeader(
+        dbc.Row([
+            dbc.Col(html.H5("Data Selection")),
+            dbc.Col(
+                dbc.Button(
+                    "Copy Link to Plot",
+                    color="primary",
+                    size="sm",
+                    className="mr-1",
+                    style={"float": "right"},
+                    id="copy_link_button",
+                ),
+            ),
+        ])),
     dbc.CardBody(
         [   
-            html.H5(children='GNPS Data Selection'),
+            html.H5("USI Data Selection"),
             dbc.InputGroup(
                 [
-                    dbc.InputGroupAddon("Spectrum USI", addon_type="prepend"),
+                    dbc.InputGroupAddon("Spectrum USI1", addon_type="prepend"),
                     dbc.Input(id='usi1', placeholder="Enter GNPS USI", value=""),
                 ],
                 className="mb-3",
@@ -104,7 +108,7 @@ DATASELECTION_CARD = [
             html.Hr(),
             dbc.InputGroup(
                 [
-                    dbc.InputGroupAddon("Spectrum USI", addon_type="prepend"),
+                    dbc.InputGroupAddon("Spectrum USI2", addon_type="prepend"),
                     dbc.Input(id='usi2', placeholder="Enter GNPS USI", value=""),
                 ],
                 className="mb-3",
@@ -152,12 +156,7 @@ MIDDLE_DASHBOARD = [
                 id="output",
                 children=[html.Div([html.Div(id="loading-output-23")])],
                 type="default",
-            ),
-            dcc.Loading(
-                id="plot_link",
-                children=[html.Div([html.Div(id="loading-output-42")])],
-                type="default",
-            ),
+            )
         ]
     )
 ]
@@ -204,6 +203,14 @@ EXAMPLES_DASHBOARD = [
 BODY = dbc.Container(
     [
         dcc.Location(id='url', refresh=False),
+        html.Div(
+            [
+                dcc.Link(id="query_link", href="#", target="_blank"),
+            ],
+            style={
+                    "display" :"none"
+            }
+        ),
         dbc.Row([
             dbc.Col(
                 dbc.Card(LEFT_DASHBOARD),
@@ -258,7 +265,7 @@ def determine_task(search):
 
 
 @app.callback([
-                Output('plot_link', 'children')
+                Output('query_link', 'href'),
               ],
               [
                   Input('usi1', 'value'),
@@ -273,12 +280,42 @@ def draw_link(      usi1, usi2, peak_tolerance, filter_switches):
     url_params["usi2"] = usi2
     url_params["peak_tolerance"] = peak_tolerance
     url_params["filter_switches"] = filter_switches
-    
-    url_provenance = dbc.Button("Link to this Plot", block=True, color="primary", className="mr-1")
-    provenance_link_object = dcc.Link(url_provenance, href="/?" + urllib.parse.urlencode(url_params) , target="_blank")
 
-    return [provenance_link_object]
+    url_params = urllib.parse.urlencode(url_params)
 
+    return [request.host_url + "/?" + url_params]
+
+app.clientside_callback(
+    """
+    function(n_clicks, button_id, text_to_copy) {
+        original_text = "Copy Link"
+        if (n_clicks > 0) {
+            const el = document.createElement('textarea');
+            el.value = text_to_copy;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            setTimeout(function(id_to_update, text_to_update){ 
+                return function(){
+                    document.getElementById(id_to_update).textContent = text_to_update
+                }}(button_id, original_text), 1000);
+            document.getElementById(button_id).textContent = "Copied!"
+            return 'Copied!';
+        } else {
+            return original_text;
+        }
+    }
+    """,
+    Output('copy_link_button', 'children'),
+    [
+        Input('copy_link_button', 'n_clicks'),
+        Input('copy_link_button', 'id'),
+    ],
+    [
+        State('query_link', 'href'),
+    ]
+)
 
 @cache.memoize()
 def get_usi_peaks(usi):
