@@ -12,7 +12,9 @@ def calculate_spectralentropy(spectrum1_dict, spectrum2_dict, alignment_params={
     spec_query = np.array(spectrum1_dict["peaks"], dtype=np.float32)
     spec_reference = np.array(spectrum2_dict["peaks"], dtype=np.float32)
 
-    similarity = spectral_entropy.calculate_entropy_similarity(spec_query, spec_reference, ms2_da=0.05)
+    similarity = spectral_entropy.calculate_entropy_similarity(spec_query, \
+        spec_reference, \
+        ms2_da=alignment_params.get("peak_tolerance", 0.05))
     print("Entropy similarity:{}.".format(similarity))
 
     scores = {}
