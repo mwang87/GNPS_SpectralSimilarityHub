@@ -358,13 +358,15 @@ def _calculate_scores_peaks(spec1, spec2, alignment_params={}):
     ms2deepscore_results = tasks.tasks_compute_similarity_ms2deepscore.delay(spec1, spec2, alignment_params=alignment_params)
     simile_results = tasks.tasks_compute_similarity_simile.delay(spec1, spec2, alignment_params=alignment_params)
     gnps_results = tasks.tasks_compute_similarity_gnpsalignment.delay(spec1, spec2, alignment_params=alignment_params)
+    spectralentropy_results = tasks.tasks_compute_similarity_spectralentropy.delay(spec1, spec2, alignment_params=alignment_params)
     
     result_list = [ matchms_modified_cosine_results,
                     matchms_greedy_results, 
                     spec2vec_results,
                     ms2deepscore_results, 
                     simile_results, 
-                    gnps_results]
+                    gnps_results,
+                    spectralentropy_results]
 
     real_result_list = []
 

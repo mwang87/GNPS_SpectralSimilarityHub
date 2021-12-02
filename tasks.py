@@ -28,6 +28,11 @@ except:
     print("MS2Deep IMPORT FAILURE")
     pass
 
+try:
+    import run_spectralentropy
+except:
+    print("Spectral Entropy IMPORT FAILURE")
+    pass
 
 celery_instance = Celery('tasks', backend='redis://gnpssimilarity-redis', broker='pyamqp://guest@gnpssimilarity-rabbitmq//', )
 
@@ -94,6 +99,18 @@ def tasks_compute_similarity_ms2deepscore(spectrum1_dict, spectrum2_dict, alignm
 
     return results
 
+@celery_instance.task(time_limit=60)
+def tasks_compute_similarity_spectralentropy(spectrum1_dict, spectrum2_dict, alignment_params={}):
+    calculate_spectralentropy = memory.cache(run_spectralentropy.calculate_spectralentropy)
+    score = calculate_spectralentropy(spectrum1_dict, spectrum2_dict, alignment_params=alignment_params)
+
+    results = {}
+    results["sim"] = score["score"]
+    results["type"] = "spectralentropy"
+
+    return results
+
+
 # celery_instance.conf.beat_schedule = {
 #     "cleanup": {
 #         "task": "tasks._task_cleanup",
@@ -114,4 +131,6 @@ celery_instance.conf.task_routes = {
 
     'tasks.tasks_compute_similarity_simile': {'queue': 'simile'},
     'tasks.tasks_compute_similarity_ms2deepscore': {'queue': 'ms2deepscore'},
+
+    'tasks.tasks_compute_similarity_spectralentropy': {'queue': 'worker'},
 }
