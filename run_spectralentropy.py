@@ -18,6 +18,6 @@ def calculate_spectralentropy(spectrum1_dict, spectrum2_dict, alignment_params={
     print("Entropy similarity:{}.".format(similarity))
 
     scores = {}
-    scores["score"] = similarity    
+    scores["score"] = similarity
 
     return scores
