@@ -1,3 +1,6 @@
 [submodule "simile"]
 	path = simile
 	url = https://github.com/biorack/simile
+[submodule "SpectralEntropy"]
+	path = SpectralEntropy
+	url = https://github.com/YuanyueLi/SpectralEntropy.git
