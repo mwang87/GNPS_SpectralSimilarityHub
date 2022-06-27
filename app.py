@@ -409,18 +409,23 @@ def draw_output(usi1, usi2, peak_tolerance, filter_switches):
 # API
 @server.route("/api/comparison", methods = ['POST', 'GET'])
 def comparison_api():
+    alignment_params = {}
+    alignment_params["peak_tolerance"] = request.values.get("peak_tolerance", 0.5)
+    alignment_params["precursor_filter"] = False # This is a hack
+    alignment_params["window_filter"] = False # this is a hack
+
     if "usi1" in request.values:
         # USI version
         usi1 = request.values.get("usi1")
         usi2 = request.values.get("usi2")
 
-        all_results = _calculate_scores_usi(usi1, usi2, alignment_params=dict(request.values))
+        all_results = _calculate_scores_usi(usi1, usi2, alignment_params=alignment_params)
     else:
         # Peaks version
         spec1 = json.loads(request.values.get("spec1"))
         spec2 = json.loads(request.values.get("spec2"))
 
-        all_results = _calculate_scores_peaks(spec1, spec2, alignment_params=dict(request.values))
+        all_results = _calculate_scores_peaks(spec1, spec2, alignment_params=alignment_params)
 
 
     return json.dumps(all_results) 
