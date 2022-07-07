@@ -100,7 +100,7 @@ DATASELECTION_CARD = [
             html.H5("USI Data Selection"),
             dbc.InputGroup(
                 [
-                    dbc.InputGroupAddon("Spectrum USI1", addon_type="prepend"),
+                    dbc.InputGroup("Spectrum USI1"),
                     dbc.Input(id='usi1', placeholder="Enter GNPS USI", value=""),
                 ],
                 className="mb-3",
@@ -108,7 +108,7 @@ DATASELECTION_CARD = [
             html.Hr(),
             dbc.InputGroup(
                 [
-                    dbc.InputGroupAddon("Spectrum USI2", addon_type="prepend"),
+                    dbc.InputGroup("Spectrum USI2"),
                     dbc.Input(id='usi2', placeholder="Enter GNPS USI", value=""),
                 ],
                 className="mb-3",
@@ -116,14 +116,14 @@ DATASELECTION_CARD = [
             html.Br(),
             dbc.InputGroup(
                 [
-                    dbc.InputGroupAddon("MS2 Peak Tolerance", addon_type="prepend"),
+                    dbc.InputGroup("MS2 Peak Tolerance"),
                     dbc.Input(id='peak_tolerance', placeholder="Enter Tolerance", value="0.5"),
                 ],
                 className="mb-3",
             ),
             dbc.InputGroup(
                 [
-                    dbc.InputGroupAddon("Peak Filtering Options", addon_type="prepend"),
+                    dbc.InputGroup("Peak Filtering Options"),
                     dbc.Checklist(
                         options=[
                             {"label": "Top 6 in +/- 50 Da", "value": "window"},

@@ -18,3 +18,4 @@ pyamqp
 joblib==1.0.1
 scipy
 cython
+dash_daq
