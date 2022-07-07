@@ -100,7 +100,7 @@ DATASELECTION_CARD = [
             html.H5("USI Data Selection"),
             dbc.InputGroup(
                 [
-                    dbc.InputGroup("Spectrum USI1"),
+                    dbc.InputGroupText("Spectrum USI1"),
                     dbc.Input(id='usi1', placeholder="Enter GNPS USI", value=""),
                 ],
                 className="mb-3",
@@ -108,7 +108,7 @@ DATASELECTION_CARD = [
             html.Hr(),
             dbc.InputGroup(
                 [
-                    dbc.InputGroup("Spectrum USI2"),
+                    dbc.InputGroupText("Spectrum USI2"),
                     dbc.Input(id='usi2', placeholder="Enter GNPS USI", value=""),
                 ],
                 className="mb-3",
@@ -116,14 +116,14 @@ DATASELECTION_CARD = [
             html.Br(),
             dbc.InputGroup(
                 [
-                    dbc.InputGroup("MS2 Peak Tolerance"),
+                    dbc.InputGroupText("MS2 Peak Tolerance"),
                     dbc.Input(id='peak_tolerance', placeholder="Enter Tolerance", value="0.5"),
                 ],
                 className="mb-3",
             ),
             dbc.InputGroup(
                 [
-                    dbc.InputGroup("Peak Filtering Options"),
+                    dbc.InputGroupText("Peak Filtering Options"),
                     dbc.Checklist(
                         options=[
                             {"label": "Top 6 in +/- 50 Da", "value": "window"},
@@ -165,7 +165,7 @@ CONTRIBUTORS_DASHBOARD = [
     dbc.CardHeader(html.H5("Contributors")),
     dbc.CardBody(
         [
-            "Mingxun Wang PhD - UC Riverside",
+            html.A("Mingxun Wang PhD - UC Riverside", href="https://www.cs.ucr.edu/~mingxunw/"),
             html.Br(),
             html.Br(),
             html.H5("Citation"),
