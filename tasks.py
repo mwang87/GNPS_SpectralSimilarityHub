@@ -8,6 +8,7 @@ memory = Memory("temp/memory-cache", verbose=0)
 try:
     import run_spec2vec
 except:
+    print("Spec2Vect IMPORT FAILURE")
     pass
 
 try:
