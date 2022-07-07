@@ -165,7 +165,7 @@ CONTRIBUTORS_DASHBOARD = [
     dbc.CardHeader(html.H5("Contributors")),
     dbc.CardBody(
         [
-            "Mingxun Wang PhD - UC San Diego",
+            "Mingxun Wang PhD - UC Riverside",
             html.Br(),
             html.Br(),
             html.H5("Citation"),
@@ -349,24 +349,42 @@ def _calculate_scores_usi(usi1, usi2, alignment_params={}):
         
     return real_result_list
 
-def _calculate_scores_peaks(spec1, spec2, alignment_params={}):
-    # TODO: Do the filtering here
-    matchms_modified_cosine_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="modified_cosine", alignment_params=alignment_params)
-    matchms_greedy_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="cosine_greedy", alignment_params=alignment_params)
+def _calculate_scores_peaks(spec1, spec2, alignment_params={}, metrics_list=[]):
+    if len(metrics_list) == 0:
+        metrics_list = ["modified_cosine", "greedy_cosine", "spec2vec", "ms2deepscore", "simile", "gnps", "entropy"]
 
-    spec2vec_results = tasks.tasks_compute_similarity_spec2vec.delay(spec1, spec2, alignment_params=alignment_params)
-    ms2deepscore_results = tasks.tasks_compute_similarity_ms2deepscore.delay(spec1, spec2, alignment_params=alignment_params)
-    simile_results = tasks.tasks_compute_similarity_simile.delay(spec1, spec2, alignment_params=alignment_params)
-    gnps_results = tasks.tasks_compute_similarity_gnpsalignment.delay(spec1, spec2, alignment_params=alignment_params)
-    spectralentropy_results = tasks.tasks_compute_similarity_spectralentropy.delay(spec1, spec2, alignment_params=alignment_params)
+    # TODO: Do the filtering here
+
+    # Farming out all the calculations
+    result_list = []
+    if "modified_cosine" in metrics_list:
+        matchms_modified_cosine_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="modified_cosine", alignment_params=alignment_params)
+        result_list.append(matchms_modified_cosine_results)
     
-    result_list = [ matchms_modified_cosine_results,
-                    matchms_greedy_results, 
-                    spec2vec_results,
-                    ms2deepscore_results, 
-                    simile_results, 
-                    gnps_results,
-                    spectralentropy_results]
+    if "greedy_cosine" in metrics_list:
+        matchms_greedy_results = tasks.tasks_compute_similarity_matchms.delay(spec1, spec2, scoring_function="cosine_greedy", alignment_params=alignment_params)
+        result_list.append(matchms_greedy_results)
+
+    if "spec2vec" in metrics_list:
+        spec2vec_results = tasks.tasks_compute_similarity_spec2vec.delay(spec1, spec2, alignment_params=alignment_params)
+        result_list.append(spec2vec_results)
+
+    if "ms2deepscore" in metrics_list:
+        ms2deepscore_results = tasks.tasks_compute_similarity_ms2deepscore.delay(spec1, spec2, alignment_params=alignment_params)
+        result_list.append(ms2deepscore_results)
+
+    if "simile" in metrics_list:
+        simile_results = tasks.tasks_compute_similarity_simile.delay(spec1, spec2, alignment_params=alignment_params)
+        result_list.append(simile_results)
+
+    if "gnps" in metrics_list:
+        gnps_results = tasks.tasks_compute_similarity_gnpsalignment.delay(spec1, spec2, alignment_params=alignment_params)
+        result_list.append(gnps_results)
+
+    if "entropy" in metrics_list:
+        spectralentropy_results = tasks.tasks_compute_similarity_spectralentropy.delay(spec1, spec2, alignment_params=alignment_params)
+        result_list.append(spectralentropy_results)
+    
 
     real_result_list = []
 
@@ -413,6 +431,12 @@ def comparison_api():
     alignment_params["peak_tolerance"] = request.values.get("peak_tolerance", 0.5)
     alignment_params["precursor_filter"] = False # This is a hack
     alignment_params["window_filter"] = False # this is a hack
+    
+    metrics_list = []
+    try:
+        metrics_list = json.loads(request.values.get("metrics", "[]"))
+    except:
+        pass
 
     if "usi1" in request.values:
         # USI version
@@ -425,7 +449,7 @@ def comparison_api():
         spec1 = json.loads(request.values.get("spec1"))
         spec2 = json.loads(request.values.get("spec2"))
 
-        all_results = _calculate_scores_peaks(spec1, spec2, alignment_params=alignment_params)
+        all_results = _calculate_scores_peaks(spec1, spec2, alignment_params=alignment_params, metrics_list=metrics_list)
 
 
     return json.dumps(all_results) 
