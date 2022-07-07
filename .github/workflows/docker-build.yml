@@ -16,5 +16,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: recursive
     - name: Build the Docker image
-      run: docker build . --file Dockerfile
+      run: |
+        docker build . --file Dockerfile
+        docker build . --file Dockerfile.ms2deepscore
+        docker build . --file Dockerfile.simile
+        docker build . --file Dockerfile.spec2vec
