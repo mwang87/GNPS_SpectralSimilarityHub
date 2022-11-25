@@ -17,10 +17,12 @@ services:
     restart: unless-stopped
     command: /app/run_server.sh
     environment:
-      VIRTUAL_HOST: gnps-similarity.ucsd.edu
-      VIRTUAL_PORT: 5453
-      LETSENCRYPT_HOST: gnps-similarity.ucsd.edu
-      LETSENCRYPT_EMAIL: miw023@ucsd.edu
+      #VIRTUAL_HOST: gnps-similarity.ucsd.edu
+      VIRTUAL_HOST: similarity.gnps2.org
+      VIRTUAL_PORT: 5000
+      #LETSENCRYPT_HOST: gnps-similarity.ucsd.edu
+      LETSENCRYPT_HOST: similarity.gnps2.org
+      LETSENCRYPT_EMAIL: mwang87@gmail.com
 
   
   gnpssimilarity-worker:
